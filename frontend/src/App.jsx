@@ -1,5 +1,5 @@
-import React, { Suspense, lazy } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import React, { Suspense, lazy, useEffect, useState } from "react";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 import Header from "./Components/common_components/Header.jsx";
 import Footer from "./Components/common_components/Footer.jsx";
@@ -53,11 +53,30 @@ const CommunityService = lazy(() =>
 );
 
 const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const navigate = useNavigate();
   const location = useLocation();
 
   // Check if the current route starts with "/admin"
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isLogRoute = location.pathname.startsWith("/login");
+
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+    if (token) {
+      setIsLoggedIn(true);
+      if (location.pathname === "/login" || !isAdminRoute) {
+        navigate("/admin/dashboard");
+        setRefreshKey((prev) => prev + 1); // Trigger component remount
+      }
+    } else {
+      setIsLoggedIn(false);
+      if (isAdminRoute && !isLogRoute) {
+        navigate("/login");
+      }
+    }
+  }, [isAdminRoute, isLogRoute, location.pathname, navigate]);
 
   return (
     <Suspense
@@ -68,7 +87,17 @@ const App = () => {
       }
     >
       {/* Render ProtectedLayout or Header dynamically */}
-      {isAdminRoute ? <ProtectedLayout setIsAuthenticated={false} /> : <>{ !isLogRoute && <Header />}</> }
+      {isAdminRoute ? (
+        isLoggedIn ? (
+          <ProtectedLayout setIsLoggedIn={setIsLoggedIn} />
+        ) : (
+          <Navigate to="/login" replace />
+        )
+      ) : (
+        <>
+          {!isLogRoute && <Header />}
+        </>
+      )}
 
       {/* Routes */}
       <Routes>
@@ -80,7 +109,7 @@ const App = () => {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/press-release" element={<Press_Release />} />
         <Route path="/press-release/:id" element={<ActivityDetails />} />
-        <Route path="/recent-activities/:id" element={<RecentActivityDetails/> }/>
+        <Route path="/recent-activities/:id" element={<RecentActivityDetails />} />
         <Route path="/recent-activities" element={<Recent_Activities />} />
         <Route path="/recent-activities/:id" element={<ActivityDetails />} />
         <Route path="/donate-us" element={<Donateus />} />

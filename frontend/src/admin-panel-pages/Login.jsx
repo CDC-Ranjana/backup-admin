@@ -48,13 +48,13 @@ const Login = ({ setIsAuthenticated }) => {
         password,
       });
 
-      const { token } = response.data; 
+      const { token } = response.data;
       if (token) {
-        localStorage.setItem("adminToken", token); 
-        setIsAuthenticated(true); 
-        toast.success("Login successful!");
+        console.log("token in login cmpo", token);
+        localStorage.setItem("adminToken", token);
 
-        // Navigate to dashboard after setting the token and authentication state
+        setIsAuthenticated(true);
+        toast.success("Login successful!");
         navigate("/admin/dashboard");
       }
     } catch (err) {

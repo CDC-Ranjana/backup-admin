@@ -35,7 +35,7 @@ const Gallery = () => {
 
           {/* Filter Buttons */}
           <div className="flex lg:justify-center flex-wrap mb-4 gap-4">
-            {["all", "child_activites", "sadhu_seva", "health_awaraness", "child_education", "sysv"].map((category) => (
+            {["all", "child_activites", "sadhu_seva", "health_awaraness", "child_education", "Yamuna Cleaning"].map((category) => (
               <button
                 key={category}
                 onClick={() => handleFilterChange(category)}

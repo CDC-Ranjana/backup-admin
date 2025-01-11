@@ -1,12 +1,18 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const Header = ({ toggleSidebar, setIsAuthenticated }) => {
+const Header = ({ toggleSidebar, setIsLoggedIn }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    // Remove token from localStorage
     localStorage.removeItem("adminToken");
-    setIsAuthenticated(false);
+
+    // Update authentication state
+    if (setIsLoggedIn) {
+      setIsLoggedIn(false);
+    }
+    // Redirect to login
     navigate("/login");
   };
 
